@@ -1,3 +1,32 @@
+/* basic html component style */
 @tailwind base;
+
 @tailwind components;
+
+/* tailwind utility classes. ex) w-4 */
 @tailwind utilities;
+
+html,
+body,
+:root {
+    height: 100%;
+}
+
+/*!* Extend "@tailwind xxxx" layers *!*/
+/*@layer base {*/
+/*    a {*/
+/*        @apply text-blue-500;*/
+/*    }*/
+/*}*/
+
+/*@layer utilities {*/
+/*    .text-bigger {*/
+/*        @apply text-2xl font-semibold;*/
+/*    }*/
+/*}*/
+
+/*@layer components {*/
+/*    .btn {*/
+/*        @apply bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 hover:scale-105 transition hover:shadow-lg;*/
+/*    }*/
+/*}*/

@@ -1,9 +1,11 @@
 services:
   server:
+    restart: no
     build:
       context: .
-    environment:
-      NODE_ENV: development
+      target: dev
+    env_file:
+      - .env
     volumes:
       - .:/usr/src/app
     ports:
