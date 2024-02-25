@@ -1,5 +1,5 @@
 services:
-  server:
+  app:
     restart: no
     build:
       context: .
@@ -10,6 +10,11 @@ services:
       - .:/usr/src/app
     ports:
       - 3000:3000
+    healthcheck:
+      test: "wget --no-verbose --tries=1 --spider http://localhost:3000/api/status?from=docker-compose || exit 1"
+      interval: 30s
+      timeout: 5s
+      retries: 5
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to
