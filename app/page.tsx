@@ -2,16 +2,26 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="h-full flex flex-col justify-center items-center bg-slate-300">
+    <main className="min-h-screen w-full flex flex-col justify-between items-center p-5">
 
-      {/* Card */}
-      <div className="
-        *:transition
-        justify-center items-start bg-white p-5 rounded-md w-full max-w-screen-sm
-        flex gap-2 *:bg-blue-600 *:rounded-2xl *:px-5 *:py-3 *:text-white  *:hover:shadow-2xl">
-        <Link href={"/demo/card"} className="hover:scale-105"> Card </Link>
-        <Link href={"/demo/list"} className="hover:scale-105"> List </Link>
-        <Link href={"/demo/input"} className="hover:scale-105"> Input </Link>
+      {/* Logo & Welcome message*/}
+      <div className="flex flex-col gap-2 my-auto justify-center items-center *:font-medium">
+        <span className="text-9xl">🥕</span>
+        <h1 className="text-4xl">Carrot</h1>
+        <h2 className="text-2xl">Welcome to carrot market</h2>
+      </div>
+
+      {/* Start button */}
+      <div className="flex flex-col gap-2 w-full items-center">
+        <Link href="/create-account" className="w-full primary-btn font-medium text-lg p-3">
+          Start
+        </Link>
+        <div className="flex gap-1">
+          <span>Already have an account?</span>
+          <Link href="/login">
+            Login
+          </Link>
+        </div>
       </div>
     </main>
   );

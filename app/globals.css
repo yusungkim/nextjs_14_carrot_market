@@ -12,12 +12,12 @@ body,
     height: 100%;
 }
 
-/*!* Extend "@tailwind xxxx" layers *!*/
-/*@layer base {*/
-/*    a {*/
-/*        @apply text-blue-500;*/
-/*    }*/
-/*}*/
+/* Extend "@tailwind xxxx" layers */
+@layer base {
+    a {
+        @apply text-orange-500 hover:underline underline-offset-2;
+    }
+}
 
 /*@layer utilities {*/
 /*    .text-bigger {*/
@@ -25,8 +25,8 @@ body,
 /*    }*/
 /*}*/
 
-/*@layer components {*/
-/*    .btn {*/
-/*        @apply bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 hover:scale-105 transition hover:shadow-lg;*/
-/*    }*/
-/*}*/
+@layer components {
+    .primary-btn {
+        @apply text-center hover:no-underline bg-orange-600 text-white py-2 px-4 rounded hover:bg-orange-500 active:bg-orange-700 transition active:shadow-lg;
+    }
+}
