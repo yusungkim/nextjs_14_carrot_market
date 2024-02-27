@@ -10,6 +10,8 @@ WORKDIR /usr/src/app
 # into this layer.
 FROM base as dev
 ENV NODE_ENV development
+# Install bash and curl for debugging
+RUN apk update && apk upgrade && apk add bash curl --no-cache
 RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=bind,source=package-lock.json,target=package-lock.json \
     --mount=type=cache,target=/root/.npm \
