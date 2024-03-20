@@ -1,12 +1,15 @@
 "use server"
 
 import { z } from "zod"
+import {
+  PASSWORD_MAX_LENGTH,
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_REGEX, PASSWORD_REGEX_MESSAGE, USERNAME_MAX_LENGTH,
+  USERNAME_MIN_LENGTH,
+  USERNAME_REGEX,
+  USERNAME_REGEX_MESSAGE
+} from "@/lib/constants";
 
-const usernameRegex = new RegExp(/^[a-zA-Z0-9\s]+$/)
-// At least one uppercase letter, one lowercase letter, one number and one special character
-const passwordRegex = new RegExp(
-  /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).+$/
-);
 const checkUsername = (username: string) => !username.trim().includes("potato")
 const checkPasswords = ({password, confirm_password}: {password: string, confirm_password: string}) => password === confirm_password
 
@@ -16,20 +19,20 @@ const formSchema = z.object({
       invalid_type_error: "Username must be a string",
       required_error: "Username is required",
     })
-    .min(3, "Too short")
-    .max(20, "Too long")
+    .min(USERNAME_MIN_LENGTH, "Too short")
+    .max(USERNAME_MAX_LENGTH, "Too long")
     .toLowerCase()
     .trim()
-    .regex(usernameRegex, "Username can only contain letters, numbers and spaces")
+    .regex(USERNAME_REGEX, USERNAME_REGEX_MESSAGE)
     .transform((val) => `🚀-${val.replace(/\s+/g, " ")}`)
     .refine(checkUsername, "Username cannot contain potato"),
   email: z.string().toLowerCase().email(),
   password: z
     .string()
-    .min(8)
-    .max(20)
-    .regex(passwordRegex, "A password must have lowercase, UPPERCASE, number and special character"),
-  confirm_password: z.string().min(8).max(20),
+    .min(PASSWORD_MIN_LENGTH)
+    .max(PASSWORD_MAX_LENGTH)
+    .regex(PASSWORD_REGEX, PASSWORD_REGEX_MESSAGE),
+  confirm_password: z.string().min(PASSWORD_MIN_LENGTH).max(PASSWORD_MAX_LENGTH),
 })
   .refine(checkPasswords, {
     message: "Passwords do not match",
@@ -50,8 +53,8 @@ export async function createAccount(prevStatus: any, formData: FormData) {
   if (!result.success) {
     const errors = result.error.flatten()
     console.log("Validation errors:", errors)
-    return errors
+    return { data: null, errors }
   } else {
-    return result.data
+    return {data: result.data, errors: null}
   }
 }

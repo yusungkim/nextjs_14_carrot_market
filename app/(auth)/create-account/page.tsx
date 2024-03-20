@@ -5,6 +5,7 @@ import { FormButton } from "@/app/components/form-button";
 import SocialLogin from "@/app/components/social-login";
 import {useFormState} from "react-dom";
 import {createAccount} from "@/app/(auth)/create-account/actions";
+import {USERNAME_MIN_LENGTH, USERNAME_MAX_LENGTH, PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH} from "@/lib/constants";
 
 export default function CreateAccount() {
   const [state, dispatch] = useFormState(createAccount, null);
@@ -22,32 +23,32 @@ export default function CreateAccount() {
           type="text"
           placeholder="Username"
           required
-          errors={state?.fieldErrors?.username}
-          minLength={3}
-          maxLength={20}
+          errors={state?.errors?.fieldErrors?.username}
+          minLength={USERNAME_MIN_LENGTH}
+          maxLength={USERNAME_MAX_LENGTH}
         />
         <FormInput
           name="email"
           type="email"
           placeholder="Email"
           required
-          errors={state?.fieldErrors?.email} />
+          errors={state?.errors?.fieldErrors?.email} />
         <FormInput
           name="password"
           type="password"
           placeholder="Password"
           required
-          minLength={8}
-          maxLength={20}
-          errors={state?.fieldErrors?.password} />
+          minLength={PASSWORD_MIN_LENGTH}
+          maxLength={PASSWORD_MAX_LENGTH}
+          errors={state?.errors?.fieldErrors?.password} />
         <FormInput
           name="confirm_password"
           type="password"
           placeholder="Confirm Password"
           required
-          minLength={8}
-          maxLength={20}
-          errors={state?.fieldErrors?.confirm_password} />
+          minLength={PASSWORD_MIN_LENGTH}
+          maxLength={PASSWORD_MAX_LENGTH}
+          errors={state?.errors?.fieldErrors?.confirm_password} />
         <FormButton text="Create Account" />
       </form>
       <div className="h-px w-full bg-neutral-400" />
