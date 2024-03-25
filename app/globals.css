@@ -29,4 +29,14 @@ body,
     .primary-btn {
         @apply text-center hover:no-underline bg-orange-600 text-white py-2 px-4 rounded hover:bg-orange-500 active:bg-orange-700 transition active:shadow-lg;
     }
+
+    /* remove arrow from number type input */
+    .no-spinner {
+        -moz-appearance: textfield;
+    }
+    .no-spinner::-webkit-outer-spin-button,
+    .no-spinner::-webkit-inner-spin-button {
+        margin: 0;
+        -webkit-appearance: none;
+    }
 }

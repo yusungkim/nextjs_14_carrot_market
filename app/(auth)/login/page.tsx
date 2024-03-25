@@ -28,7 +28,7 @@ export default function Login() {
           placeholder="Email"
           required
           errors={state?.errors?.fieldErrors?.email}
-          />
+        />
         <FormInput
           name="password"
           type="password"

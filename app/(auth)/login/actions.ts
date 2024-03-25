@@ -12,10 +12,11 @@ const formSchema = z.object({
 })
 
 export const login = async (prevState: any, formData: FormData) => {
-  const data = {
-    email: formData.get("email"),
-    password: formData.get("password"),
-  }
+  // const data = {
+  //   email: formData.get("email"),
+  //   password: formData.get("password"),
+  // }
+  const data = Object.fromEntries(formData.entries())
   const validationResult = formSchema.safeParse(data)
 
   await new Promise((resolve) => setTimeout(resolve, 2000))

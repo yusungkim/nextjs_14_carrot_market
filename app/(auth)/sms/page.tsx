@@ -1,12 +1,17 @@
 "use client";
 
 import FormInput from "@/app/components/form-input";
-import { FormButton } from "@/app/components/form-button";
+import {FormButton} from "@/app/components/form-button";
 import {useFormState} from "react-dom";
 import {smsLogin} from "@/app/(auth)/sms/actions";
 
+const initialState = {
+  code_sent: false,
+  errors: undefined
+}
+
 export default function SMSLogin() {
-  const [state, dispatch] = useFormState(smsLogin, null)
+  const [state, dispatch] = useFormState(smsLogin, initialState)
 
   return (
     <main className="flex flex-col gap-10 px-6 py-8">
@@ -14,25 +19,26 @@ export default function SMSLogin() {
         <h1 className="text-2xl">SMS Login</h1>
         <h2 className="text-xl">Verify your phone number.</h2>
       </div>
-      <form 
+      <form
         className="flex flex-col gap-3"
         action={dispatch}
       >
-        <FormInput
-          name="phone_number"
-          type="number"
-          placeholder="Phone number"
-          required
-          errors={state?.errors?.fieldErrors?.phone_number}
-        />
-        <FormInput
+        {state.code_sent ? <FormInput
           name="verification_code"
           type="number"
           placeholder="Verification code"
           required
-          errors={state?.errors?.fieldErrors?.verification_code}
-        />
-        <FormButton text="Verify" />
+          min={100000}
+          max={999999}
+          errors={state?.errors?.formErrors}
+        /> : <FormInput
+          name="phone_number"
+          type="text"
+          placeholder="Phone number"
+          required
+          errors={state.errors?.formErrors}
+        />}
+        <FormButton text={ state.code_sent ? "Verify" : "Send SMS" }/>
       </form>
     </main>
   );

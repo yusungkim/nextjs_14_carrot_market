@@ -1,25 +1,49 @@
+"use server"
 
 import { z} from "zod"
-import { PHONE_NUMBER_REGEX, PHONE_NUMBER_REGEX_MESSAGE, VERIFICATION_CODE_LENGTH } from "@/lib/constants"
+import validator from "validator"
+import {redirect} from "next/navigation";
 
-const formSchema = z.object({
-  phone_number: z.string().regex(PHONE_NUMBER_REGEX, PHONE_NUMBER_REGEX_MESSAGE),
-  verification_code: z.string().length(VERIFICATION_CODE_LENGTH)
-})
+const phoneNumberSchema = z
+  .string()
+  .trim()
+  .refine(
+    (phone) => validator.isMobilePhone(phone, 'ja-JP'),
+    'Wrong phone format'
+  )
 
-export const smsLogin = async (prevStatus: any, formData: FormData) => {
-  const data = {
-    phone_number: formData.get("phone_number"),
-    verification_code: formData.get("verification_code"),
-  }
+const verificationCodeSchema = z
+  .coerce.number()
+  .min(100000)
+  .max(999999)
 
-  const validationResult = formSchema.safeParse(data)
+interface ActionState {
+  code_sent: boolean
+}
 
-  console.log(validationResult)
+export const smsLogin = async (prevStatus: ActionState, formData: FormData) => {
+  const phone_number = formData.get("phone_number")
+  const result = phoneNumberSchema.safeParse(phone_number)
 
-  if (validationResult.success) {
-    return { data: validationResult.data, errors: null }
+  if (!prevStatus.code_sent) {
+    if (!result.success) {
+      return { code_sent: false, errors: result.error.flatten() }
+    } else {
+      console.log("SMS sent")
+
+      return { code_sent: true, errors: null }
+    }
   } else {
-    return { data: null, errors: validationResult.error.flatten() }
+    const verification_code = formData.get("verification_code")
+    const result = verificationCodeSchema.safeParse(verification_code)
+    if (!result.success) {
+      console.log("SMS login failed")
+
+      return { code_sent: false, errors: result.error.flatten() }
+    } else {
+      console.log("SMS login successful")
+
+      redirect("/dashboard")
+    }
   }
 }
