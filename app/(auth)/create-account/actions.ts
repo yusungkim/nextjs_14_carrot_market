@@ -9,9 +9,35 @@ import {
   USERNAME_REGEX,
   USERNAME_REGEX_MESSAGE
 } from "@/lib/constants";
+import db from "@/lib/db";
+import { redirect } from "next/navigation";
+import getSession from "@/lib/session";
+import { hashedPassword } from "@/lib/hash";
 
 const checkUsername = (username: string) => !username.trim().includes("potato")
 const checkPasswords = ({password, confirm_password}: {password: string, confirm_password: string}) => password === confirm_password
+const checkUniqueUsername = async (username: string) => {
+  const user = await db.user.findUnique({
+    where: {
+      username,
+    },
+    select: {
+      id: true,
+    }
+  })
+  return !user
+}
+const checkUniqueEmail = async (email: string) => {
+  const user = await db.user.findUnique({
+    where: {
+      email,
+    },
+    select: {
+      id: true,
+    }
+  })
+  return !user
+}
 
 const formSchema = z.object({
   username: z
@@ -24,9 +50,14 @@ const formSchema = z.object({
     .toLowerCase()
     .trim()
     .regex(USERNAME_REGEX, USERNAME_REGEX_MESSAGE)
-    .transform((val) => `🚀-${val.replace(/\s+/g, " ")}`)
-    .refine(checkUsername, "Username cannot contain potato"),
-  email: z.string().toLowerCase().email(),
+    // .transform((val) => `🚀-${val.replace(/\s+/g, " ")}`)
+    .refine(checkUsername, "Username cannot contain potato")
+    .refine(checkUniqueUsername, "Username is already taken"),
+  email: z
+    .string()
+    .toLowerCase()
+    .email()
+    .refine(checkUniqueEmail, "Email is already taken"),
   password: z
     .string()
     .min(PASSWORD_MIN_LENGTH)
@@ -48,13 +79,34 @@ export async function createAccount(prevStatus: any, formData: FormData) {
   }
 
   // validate without throwing an error
-  const result = formSchema.safeParse(data)
-  console.log(result)
+  const result = await formSchema.safeParseAsync(data)
+
   if (!result.success) {
     const errors = result.error.flatten()
     console.log("Validation errors:", errors)
     return { data: null, errors }
   } else {
-    return {data: result.data, errors: null}
+    const user = await createUser(result.data)
+    const cookie = await getSession()
+    cookie.id = user.id
+    await cookie.save()
+    redirect("/profile")
   }
+}
+
+const createUser = async (data: {
+  password: string;
+  username: string;
+  email: string;
+}) => {
+  return await db.user.create({
+    data: {
+      username: data.username,
+      email: data.email,
+      password: await hashedPassword(data.password),
+    },
+    select: {
+      id: true,
+    }
+  })
 }

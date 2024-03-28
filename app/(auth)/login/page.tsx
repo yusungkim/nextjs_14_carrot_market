@@ -11,6 +11,8 @@ export default function Login() {
 
   const [state, dispatch] = useFormState(login, null)
 
+  console.log(state)
+
   return (
     <main className="flex flex-col gap-10 px-6 py-8">
       <div className="flex flex-col gap-2 *:font-medium">
