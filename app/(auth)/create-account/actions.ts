@@ -4,67 +4,101 @@ import { z } from "zod"
 import {
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
-  PASSWORD_REGEX, PASSWORD_REGEX_MESSAGE, USERNAME_MAX_LENGTH,
+  PASSWORD_REGEX,
+  PASSWORD_REGEX_MESSAGE,
+  PROFILE_ROUTE,
+  USERNAME_MAX_LENGTH,
   USERNAME_MIN_LENGTH,
   USERNAME_REGEX,
-  USERNAME_REGEX_MESSAGE
-} from "@/lib/constants";
-import db from "@/lib/db";
-import { redirect } from "next/navigation";
-import getSession from "@/lib/session";
-import { hashedPassword } from "@/lib/hash";
+  USERNAME_REGEX_MESSAGE,
+} from "@/lib/constants"
+import db from "@/lib/db"
+import { redirect } from "next/navigation"
+import getSession from "@/lib/session"
+import { hashedPassword } from "@/lib/hash"
 
 const checkUsername = (username: string) => !username.trim().includes("potato")
-const checkPasswords = ({password, confirm_password}: {password: string, confirm_password: string}) => password === confirm_password
-const checkUniqueUsername = async (username: string) => {
+const checkPasswords = ({
+  password,
+  confirm_password,
+}: {
+  password: string
+  confirm_password: string
+}) => password === confirm_password
+const checkUniqueUsername = async (
+  { username }: { username: string },
+  ctx: z.RefinementCtx
+) => {
   const user = await db.user.findUnique({
     where: {
       username,
     },
     select: {
       id: true,
-    }
+    },
   })
-  return !user
+  if (user) {
+    ctx.addIssue({
+      code: "custom",
+      message: "Username is already taken",
+      path: ["username"],
+      fatal: true,
+    })
+    // superRefine will return a value of z.NEVER, which will stop the validation later
+    return z.NEVER
+  }
 }
-const checkUniqueEmail = async (email: string) => {
+const checkUniqueEmail = async (
+  { email }: { email: string },
+  ctx: z.RefinementCtx
+) => {
   const user = await db.user.findUnique({
     where: {
       email,
     },
     select: {
       id: true,
-    }
+    },
   })
-  return !user
+  if (user) {
+    ctx.addIssue({
+      code: "custom",
+      message: "Email is already taken",
+      path: ["email"],
+      fatal: true,
+    })
+    // superRefine will return a value of z.NEVER, which will stop the validation later
+    return z.NEVER
+  }
 }
 
-const formSchema = z.object({
-  username: z
-    .string({
-      invalid_type_error: "Username must be a string",
-      required_error: "Username is required",
-    })
-    .min(USERNAME_MIN_LENGTH, "Too short")
-    .max(USERNAME_MAX_LENGTH, "Too long")
-    .toLowerCase()
-    .trim()
-    .regex(USERNAME_REGEX, USERNAME_REGEX_MESSAGE)
-    // .transform((val) => `🚀-${val.replace(/\s+/g, " ")}`)
-    .refine(checkUsername, "Username cannot contain potato")
-    .refine(checkUniqueUsername, "Username is already taken"),
-  email: z
-    .string()
-    .toLowerCase()
-    .email()
-    .refine(checkUniqueEmail, "Email is already taken"),
-  password: z
-    .string()
-    .min(PASSWORD_MIN_LENGTH)
-    .max(PASSWORD_MAX_LENGTH)
-    .regex(PASSWORD_REGEX, PASSWORD_REGEX_MESSAGE),
-  confirm_password: z.string().min(PASSWORD_MIN_LENGTH).max(PASSWORD_MAX_LENGTH),
-})
+const formSchema = z
+  .object({
+    username: z
+      .string({
+        invalid_type_error: "Username must be a string",
+        required_error: "Username is required",
+      })
+      .min(USERNAME_MIN_LENGTH, "Too short")
+      .max(USERNAME_MAX_LENGTH, "Too long")
+      .toLowerCase()
+      .trim()
+      .regex(USERNAME_REGEX, USERNAME_REGEX_MESSAGE)
+      // .transform((val) => `🚀-${val.replace(/\s+/g, " ")}`)
+      .refine(checkUsername, "Username cannot contain potato"),
+    email: z.string().toLowerCase().email(),
+    password: z
+      .string()
+      .min(PASSWORD_MIN_LENGTH)
+      .max(PASSWORD_MAX_LENGTH)
+      .regex(PASSWORD_REGEX, PASSWORD_REGEX_MESSAGE),
+    confirm_password: z
+      .string()
+      .min(PASSWORD_MIN_LENGTH)
+      .max(PASSWORD_MAX_LENGTH),
+  })
+  .superRefine(checkUniqueUsername)
+  .superRefine(checkUniqueEmail)
   .refine(checkPasswords, {
     message: "Passwords do not match",
     path: ["confirm_password"],
@@ -90,14 +124,14 @@ export async function createAccount(prevStatus: any, formData: FormData) {
     const cookie = await getSession()
     cookie.id = user.id
     await cookie.save()
-    redirect("/profile")
+    redirect(PROFILE_ROUTE)
   }
 }
 
 const createUser = async (data: {
-  password: string;
-  username: string;
-  email: string;
+  password: string
+  username: string
+  email: string
 }) => {
   return await db.user.create({
     data: {
@@ -107,6 +141,6 @@ const createUser = async (data: {
     },
     select: {
       id: true,
-    }
+    },
   })
 }

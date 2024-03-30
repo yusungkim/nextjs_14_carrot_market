@@ -12,12 +12,15 @@ export default function CreateAccount() {
 
   console.log(state)
   return (
-    <main className="flex flex-col gap-10 px-6 py-8">
+    <main className="flex flex-col gap-8 px-6 py-8">
       <div className="flex flex-col gap-2 *:font-medium">
         <h1 className="text-2xl">Create Account</h1>
         <h2 className="text-xl">Fill in the form below to join!</h2>
       </div>
-      <form action={dispatch} className="flex flex-col gap-3">
+
+      <div className="flex flex-col gap-4">
+        {/* Create Account */}
+        <form action={dispatch} className="flex flex-col gap-3">
         <FormInput
           name="username"
           type="text"
@@ -50,8 +53,16 @@ export default function CreateAccount() {
           maxLength={PASSWORD_MAX_LENGTH}
           errors={state?.errors?.fieldErrors?.confirm_password} />
         <FormButton text="Create Account" />
-      </form>
+        </form>
+
+        {/* Login */}
+        <div className="text-center">Already have an account? <a href="/login" className="text-primary-500">Login</a></div>
+      </div>
+      
+      {/* Seperate bar */}
       <div className="h-px w-full bg-neutral-400" />
+      
+      {/* Social Logins */}
       <SocialLogin />
     </main>
   );

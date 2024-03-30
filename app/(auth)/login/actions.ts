@@ -1,12 +1,18 @@
 "use server"
 
 import { z } from "zod"
-import {PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH, PASSWORD_REGEX, PASSWORD_REGEX_MESSAGE} from "@/lib/constants";
-import db from "@/lib/db";
+import {
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_MAX_LENGTH,
+  PASSWORD_REGEX,
+  PASSWORD_REGEX_MESSAGE,
+  PROFILE_ROUTE,
+} from "@/lib/constants"
+import db from "@/lib/db"
 
-import getSession from "@/lib/session";
-import { redirect } from "next/navigation";
-import { comparePassword } from "@/lib/hash";
+import getSession from "@/lib/session"
+import { redirect } from "next/navigation"
+import { comparePassword } from "@/lib/hash"
 
 const checkEmailExists = async (email: string) => {
   const user = await db.user.findUnique({
@@ -15,13 +21,9 @@ const checkEmailExists = async (email: string) => {
     },
     select: {
       id: true,
-    }
+    },
   })
   return !!user
-}
-
-const checkPassword = async ({email, password}: {email: string, password: string}) => {
-  
 }
 
 const formSchema = z.object({
@@ -54,11 +56,14 @@ export const login = async (prevState: any, formData: FormData) => {
     select: {
       id: true,
       password: true,
-    }
+    },
   })
 
-  const ok = await comparePassword(validationResult.data.password, user!.password ?? "")
-  
+  const ok = await comparePassword(
+    validationResult.data.password,
+    user!.password ?? ""
+  )
+
   if (!ok) {
     console.log("Incorrect password")
     return {
@@ -69,12 +74,12 @@ export const login = async (prevState: any, formData: FormData) => {
           email: [],
         },
         formErrors: {},
-      }
+      },
     }
   }
 
   const session = await getSession()
   session.id = user!.id
   await session.save()
-  redirect("/profile")
+  redirect(PROFILE_ROUTE)
 }

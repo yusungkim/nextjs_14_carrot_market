@@ -7,7 +7,7 @@ import {smsLogin} from "@/app/(auth)/sms/actions";
 
 const initialState = {
   code_sent: false,
-  errors: undefined
+  errors: null
 }
 
 export default function SMSLogin() {

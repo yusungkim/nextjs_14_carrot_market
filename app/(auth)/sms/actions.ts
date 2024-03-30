@@ -1,21 +1,18 @@
 "use server"
 
-import { z} from "zod"
+import { z } from "zod"
 import validator from "validator"
-import {redirect} from "next/navigation";
+import { redirect } from "next/navigation"
 
 const phoneNumberSchema = z
   .string()
   .trim()
   .refine(
-    (phone) => validator.isMobilePhone(phone, 'ja-JP'),
-    'Wrong phone format'
+    (phone) => validator.isMobilePhone(phone, "ja-JP"),
+    "Wrong phone format"
   )
 
-const verificationCodeSchema = z
-  .coerce.number()
-  .min(100000)
-  .max(999999)
+const verificationCodeSchema = z.coerce.number().min(100000).max(999999)
 
 interface ActionState {
   code_sent: boolean
