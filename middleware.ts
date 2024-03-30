@@ -12,22 +12,23 @@ export async function middleware(request: NextRequest) {
     isLoggedIn ? "(Logged in user)" : "(guest)"
   )
 
-  const isPublicAuthRoute = AUTH_ROUTES.includes(pathname)
-  if (isPublicAuthRoute) {
-    // Redirect Public routes logged in users to the profile page
-    if (isLoggedIn) {
-      return Response.redirect(new URL(PROFILE_ROUTE, request.nextUrl.origin))
-    }
-    // Allow public routes to be accessed without authentication
-    return null
-  }
-
   // Protect private routes
-  if (!isLoggedIn) {
-    return Response.redirect(new URL("/", request.nextUrl.origin))
+  const isPrivatePage = !AUTH_ROUTES[pathname]
+  if (isPrivatePage) {
+    if (isLoggedIn) {
+      // Allow logged in users to access private routes
+      return null
+    }
+    // Redirect unauthenticated users to the login page
+    return Response.redirect(new URL("/", request.nextUrl.origin))    
   }
 
-  // Allow authenticated users to access the private route
+  // Redirect Public routes logged in users to the profile page
+  if (isLoggedIn) {
+    return Response.redirect(new URL(PROFILE_ROUTE, request.nextUrl.origin))
+  }
+  
+  // Allow public routes to be accessed without authentication
   return null
 }
 

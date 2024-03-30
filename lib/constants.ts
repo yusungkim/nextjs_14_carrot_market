@@ -15,5 +15,13 @@ export const PASSWORD_REGEX_MESSAGE =
   "A password must have lowercase, UPPERCASE, number and special character"
 
 // Routes
-export const AUTH_ROUTES = ["/", "/create-account", "/login", "/sms"]
+interface AuthRoutes {
+  [key: string]: boolean
+}
+export const AUTH_ROUTES: AuthRoutes = {
+  "/": true,
+  "/create-account": true,
+  "/login": true,
+  "/sms": true,
+}
 export const PROFILE_ROUTE = "/profile"
