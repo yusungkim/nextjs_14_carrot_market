@@ -1,5 +1,5 @@
-import { ChatBubbleOvalLeftEllipsisIcon } from "@heroicons/react/24/solid";
-import Link from "next/link";
+import { ChatBubbleOvalLeftEllipsisIcon } from "@heroicons/react/24/solid"
+import Link from "next/link"
 
 export default function SocialLogin() {
   return (
@@ -34,5 +34,5 @@ export default function SocialLogin() {
         <span>Continue with Github</span>
       </Link>
     </div>
-  );
+  )
 }

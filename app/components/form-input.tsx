@@ -1,8 +1,8 @@
-import { InputHTMLAttributes } from "react";
+import { InputHTMLAttributes } from "react"
 
 interface FormInputProps {
-  name: string; // To enforce the name attribute, I will add it to the FormInputProps interface
-  errors?: string[];
+  name: string // To enforce the name attribute, I will add it to the FormInputProps interface
+  errors?: string[]
 }
 
 export default function FormInput({
@@ -23,5 +23,5 @@ export default function FormInput({
         </span>
       ))}
     </div>
-  );
+  )
 }
