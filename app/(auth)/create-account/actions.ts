@@ -7,6 +7,7 @@ import {
   PASSWORD_REGEX,
   PASSWORD_REGEX_MESSAGE,
   PROFILE_ROUTE,
+  SERVER_URL,
   USERNAME_MAX_LENGTH,
   USERNAME_MIN_LENGTH,
   USERNAME_REGEX,
@@ -124,7 +125,7 @@ export async function createAccount(prevStatus: any, formData: FormData) {
     const cookie = await getSession()
     cookie.id = user.id
     await cookie.save()
-    redirect(PROFILE_ROUTE)
+    redirect(SERVER_URL + PROFILE_ROUTE)
   }
 }
 

@@ -1,8 +1,7 @@
 FROM nginx:1.25.4-alpine3.18-slim
-
-ENV APP_ROOT /usr/src/app
-ENV SERVER_NAME localhost
-ENV SSL_CERTIFICATES /etc/nginx/ssl
+ARG SERVER_NAME=localhost
+ARG SSL_CERTIFICATES=/etc/nginx/ssl
+ARG APP_ROOT=/usr/src/app
 
 WORKDIR $APP_ROOT
 

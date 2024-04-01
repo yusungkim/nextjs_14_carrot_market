@@ -8,6 +8,8 @@ export async function middleware(request: NextRequest) {
   const isLoggedIn = !!session?.id
   console.log(
     "middleware ",
+    request.method,
+    request.nextUrl.origin,
     pathname,
     isLoggedIn ? "(Logged in user)" : "(guest)"
   )

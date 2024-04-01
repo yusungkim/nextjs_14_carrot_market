@@ -1,3 +1,4 @@
+import { SERVER_NAME, SERVER_URL } from "@/lib/constants"
 import db from "@/lib/db"
 import getSession from "@/lib/session"
 import { notFound, redirect } from "next/navigation"
@@ -24,9 +25,13 @@ export default async function ProfilePage() {
   const logout = async () => {
     "use server";
     const session = await getSession()
+    console.log("Logging out", session.id)
     session.destroy()
-    redirect("/")
+    // When used in a Server Action, it returns a 303 (See Other), 
+    // which is commonly used for redirecting to a success page as a result of a POST request.
+    redirect(SERVER_URL + "/")
   }
+  
   return (
     <div>
       <h1>Welcome! {user?.username}</h1>

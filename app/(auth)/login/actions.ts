@@ -7,6 +7,7 @@ import {
   PASSWORD_REGEX,
   PASSWORD_REGEX_MESSAGE,
   PROFILE_ROUTE,
+  SERVER_URL,
 } from "@/lib/constants"
 import db from "@/lib/db"
 
@@ -81,5 +82,5 @@ export const login = async (prevState: any, formData: FormData) => {
   const session = await getSession()
   session.id = user!.id
   await session.save()
-  redirect(PROFILE_ROUTE)
+  redirect(SERVER_URL + PROFILE_ROUTE)
 }

@@ -14,11 +14,13 @@ services:
       - 5555:5555
     healthcheck:
       test: "wget -q -O - http://localhost:3000/api/status?from=docker-compose || exit 1"
-      interval: 30s
+      interval: 1m
       timeout: 5s
-      retries: 5
+      retries: 3
+      start_period: 2s
     networks:
-      - carrot_market
+      carrot_market:
+        # ipv4_address: 127.30.0.2
 
   # caddy:
   #   image: caddy
@@ -28,27 +30,35 @@ services:
   #   volumes:
   #     - $PWD/docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
   #   networks:
-  #     - carrot_market
+  #     carrot_market:
+  #       ipv4_address: 172.30.0.4
 
   nginx:
     restart: no
     build:
       context: .
       dockerfile: docker/nginx/Dockerfile
+      args:
+        - SERVER_NAME=${SERVER_NAME}
     ports:
-      - "443:443"
+      - 443:443
     networks:
-      - carrot_market
+      carrot_market:
+        # ipv4_address: 127.30.0.1
     depends_on:
       app:
         condition: service_started
     healthcheck:
       test: ["CMD", "netstat","-tulpn","|","grep","nginx","|","grep","LISTEN"]
-      interval: 30s
-      timeout: 2s
+      interval: 1m
+      timeout: 5s
       retries: 3
       start_period: 2s
 
 networks:
   carrot_market:
+    # ipam:
+    #   driver: default
+    #   config:
+    #     - subnet: 127.30.0.0/24
 
